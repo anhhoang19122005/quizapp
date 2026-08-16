@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @RequiredArgsConstructor
-public class Response {
+public class ResponseRecord {
     private Integer id;
     private String response;
 }

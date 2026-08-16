@@ -1,9 +1,10 @@
 package anh.quizapp.controller;
 
-import anh.quizapp.dto.Response;
+import anh.quizapp.dto.ResponseRecord;
 import anh.quizapp.service.QuizService;
 import anh.quizapp.dto.QuestionRecord;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,8 @@ public class QuizController {
 
     @PostMapping("create")
     public ResponseEntity<String> createQuiz(@RequestParam String category, @RequestParam int numQ, @RequestParam String quizName) {
-        return quizService.createQuiz(category,numQ,quizName);
+        String result = quizService.createQuiz(category,numQ,quizName);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @GetMapping("get/{id}")
@@ -27,7 +29,7 @@ public class QuizController {
     }
 
     @PostMapping("/submit/{id}")
-    public ResponseEntity<Integer> submitQuiz(@PathVariable Integer id,@RequestBody List<Response> responses) {
+    public ResponseEntity<Integer> submitQuiz(@PathVariable Integer id,@RequestBody List<ResponseRecord> responses) {
         return quizService.calcQuizResult(id,responses);
     }
 }

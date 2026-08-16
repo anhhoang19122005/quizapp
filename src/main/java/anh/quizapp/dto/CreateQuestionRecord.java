@@ -1,13 +1,13 @@
 package anh.quizapp.dto;
 
-public record QuestionRecord(
-        int id,
+public record CreateQuestionRecord(
         String questionTitle,
         String option1,
         String option2,
         String option3,
         String option4,
-        String difficultLevel,
-        String category
+        String rightAnswer,
+        String category,
+        String difficultyLevel
 ) {
 }

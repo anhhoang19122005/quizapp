@@ -13,6 +13,6 @@ import java.util.Set;
 public interface QuestionDAO extends JpaRepository<Question, Integer> {
     public List<Question> getQuestionsByCategory(String category);
 
-    @Query("SELECT q FROM Question q where q.category =:category ORDER BY q.id limit :numQ")
+    @Query("SELECT q FROM Question q where q.category =:category ORDER BY RANDOM() limit :numQ")
     public Set<Question> getRandomQuestionsByCategory(@Param("numQ") int numQ,@Param("category") String category);
 }

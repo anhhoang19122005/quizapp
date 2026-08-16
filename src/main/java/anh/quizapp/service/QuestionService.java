@@ -44,7 +44,9 @@ public class QuestionService {
             , q.getQuestionTitle(),q.getOption1(),q.getOption2()
             ,q.getOption3(),q.getOption4(),q.getDifficultyLevel(),q.getCategory()
             );
-            records.add(questionRecord);
+            if (q.getCategory().equals(category)) {
+                records.add(questionRecord);
+            }
         });
         return records;
     }

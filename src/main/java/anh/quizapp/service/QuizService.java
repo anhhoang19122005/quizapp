@@ -6,6 +6,8 @@ import anh.quizapp.entity.Question;
 import anh.quizapp.entity.Quiz;
 import anh.quizapp.dto.ResponseRecord;
 import anh.quizapp.dto.QuestionRecord;
+import anh.quizapp.exception.AppException;
+import anh.quizapp.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -47,8 +49,10 @@ public class QuizService {
 
     public Set<QuestionRecord> getQuizQuestions(Integer id) {
             Quiz quiz = quizDAO.findById(id).orElseThrow(() ->
-                new RuntimeException("Quiz Not Found")
+                new AppException(ErrorCode.NOT_FOUND_ID)
             );
+
+
             Set<Question> questionRecordList = quiz.getQuestionList();
             Set<QuestionRecord> questionRecords = new HashSet<>();
 
@@ -62,7 +66,7 @@ public class QuizService {
     }
 
     public Integer calcQuizResult(Integer id, List<ResponseRecord> responses) {
-        Quiz quiz = quizDAO.findById(id).orElseThrow(() -> new RuntimeException("Quiz Not Found"));
+        Quiz quiz = quizDAO.findById(id).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND_ID));
         Set<Question> questions = quiz.getQuestionList();
         int right = 0;
         for (ResponseRecord response : responses) {

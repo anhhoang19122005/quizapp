@@ -15,11 +15,15 @@ public class GlobalException {
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
-    @ExceptionHandler(value = RuntimeException.class)
-    public ResponseEntity<ApiResponse<Object>> handlingRuntimeException(RuntimeException e) {
+    @ExceptionHandler(value = AppException.class)
+    public ResponseEntity<ApiResponse<Object>> handlingAppException(AppException e) {
+        ErrorCode error = e.getErrorCode();
+
         ApiResponse<Object> apiResponse = new ApiResponse<>();
-        apiResponse.setCode(ErrorCode.NOT_FOUND_ID.getCode());
-        apiResponse.setMessage(ErrorCode.NOT_FOUND_ID.getMessage());
-        return ResponseEntity.badRequest().body(apiResponse);
+        apiResponse.setCode(error.getCode());
+        apiResponse.setMessage(error.getMessage());
+
+        return ResponseEntity.status(error.getCode()).body(apiResponse);
+
     }
 }

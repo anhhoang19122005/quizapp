@@ -2,6 +2,7 @@ package anh.quizapp.controller;
 
 import anh.quizapp.dto.CreateQuestionRecord;
 import anh.quizapp.dto.QuestionRecord;
+import anh.quizapp.dto.response.ApiResponse;
 import anh.quizapp.entity.Question;
 import anh.quizapp.service.QuestionService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,26 +21,27 @@ public class QuestionController {
     QuestionService service;
 
     @GetMapping("/allQuestions")
-    public ResponseEntity<List<QuestionRecord>> getAllQuestion() {
+    public ApiResponse<List<QuestionRecord>> getAllQuestion() {
         List<QuestionRecord> questions =  service.getAllQuestion();
-        return ResponseEntity.status(HttpStatus.OK).body(questions);
+
+        return ApiResponse.<List<QuestionRecord>>builder()
+                .result(questions)
+                .build();
     }
 
     @GetMapping("/category/{category}")
-    public ResponseEntity<List<QuestionRecord>> getQuestionsByCategory(@PathVariable String category) {
+    public ApiResponse<List<QuestionRecord>> getQuestionsByCategory(@PathVariable String category) {
         List<QuestionRecord> questions = service.getQuestionsByCategory(category);
-        return ResponseEntity.status(HttpStatus.OK).body(questions);
+        return ApiResponse.<List<QuestionRecord>>builder()
+                .result(questions)
+                .build();
     }
 
     @PostMapping("add")
-    public ResponseEntity<String> addQuestion(@RequestBody CreateQuestionRecord record) {
-        try {
-            String result = service.addQuestion(record);
-            return ResponseEntity.status(HttpStatus.OK).body(result);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("failed");
+    public ApiResponse<String> addQuestion(@RequestBody CreateQuestionRecord record) {
+        return ApiResponse.<String>builder()
+                .result(service.addQuestion(record))
+                .build();
 
     }
 }

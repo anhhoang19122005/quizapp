@@ -1,6 +1,7 @@
 package anh.quizapp.controller;
 
 import anh.quizapp.dto.ResponseRecord;
+import anh.quizapp.dto.response.ApiResponse;
 import anh.quizapp.service.QuizService;
 import anh.quizapp.dto.QuestionRecord;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,18 +19,23 @@ public class QuizController {
     QuizService quizService;
 
     @PostMapping("create")
-    public ResponseEntity<String> createQuiz(@RequestParam String category, @RequestParam int numQ, @RequestParam String quizName) {
+    public ApiResponse<String> createQuiz(@RequestParam String category, @RequestParam int numQ, @RequestParam String quizName) {
         String result = quizService.createQuiz(category,numQ,quizName);
-        return ResponseEntity.status(HttpStatus.CREATED).body(result);
+        return ApiResponse.<String>builder()
+                .result(result)
+                .build();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Set<QuestionRecord>> getQuizQuestions(@PathVariable Integer id) {
-        return ResponseEntity.status(HttpStatus.OK).body(quizService.getQuizQuestions(id));
+    public ApiResponse<Set<QuestionRecord>> getQuizQuestions(@PathVariable Integer id) {
+        Set<QuestionRecord> records = quizService.getQuizQuestions(id);
+        return ApiResponse.<Set<QuestionRecord>>builder()
+                .result(records)
+                .build();
     }
 
     @PostMapping("/submit/{id}")
-    public ResponseEntity<Integer> submitQuiz(@PathVariable Integer id,@RequestBody List<ResponseRecord> responses) {
-        return ResponseEntity.status(HttpStatus.OK).body(quizService.calcQuizResult(id,responses));
+    public ApiResponse<Integer> submitQuiz(@PathVariable Integer id,@RequestBody List<ResponseRecord> responses) {
+        return ApiResponse.<Integer>builder().result(quizService.calcQuizResult(id,responses)).build();
     }
 }

@@ -20,16 +20,16 @@ public class QuizController {
     @PostMapping("create")
     public ResponseEntity<String> createQuiz(@RequestParam String category, @RequestParam int numQ, @RequestParam String quizName) {
         String result = quizService.createQuiz(category,numQ,quizName);
-        return ResponseEntity.status(HttpStatus.OK).body(result);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
-    @GetMapping("get/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Set<QuestionRecord>> getQuizQuestions(@PathVariable Integer id) {
-        return quizService.getQuizQuestions(id);
+        return ResponseEntity.status(HttpStatus.OK).body(quizService.getQuizQuestions(id));
     }
 
     @PostMapping("/submit/{id}")
     public ResponseEntity<Integer> submitQuiz(@PathVariable Integer id,@RequestBody List<ResponseRecord> responses) {
-        return quizService.calcQuizResult(id,responses);
+        return ResponseEntity.status(HttpStatus.OK).body(quizService.calcQuizResult(id,responses));
     }
 }

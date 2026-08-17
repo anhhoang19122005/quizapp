@@ -45,7 +45,7 @@ public class QuizService {
         return "failed";
     }
 
-    public ResponseEntity<Set<QuestionRecord>> getQuizQuestions(Integer id) {
+    public Set<QuestionRecord> getQuizQuestions(Integer id) {
             Quiz quiz = quizDAO.findById(id).orElseThrow(() ->
                 new RuntimeException("Quiz Not Found")
             );
@@ -58,10 +58,10 @@ public class QuizService {
                 questionRecords.add(questionRecord);
             });
 
-            return ResponseEntity.status(HttpStatus.OK).body(questionRecords);
+            return questionRecords;
     }
 
-    public ResponseEntity<Integer> calcQuizResult(Integer id, List<ResponseRecord> responses) {
+    public Integer calcQuizResult(Integer id, List<ResponseRecord> responses) {
         Quiz quiz = quizDAO.findById(id).orElseThrow(() -> new RuntimeException("Quiz Not Found"));
         Set<Question> questions = quiz.getQuestionList();
         int right = 0;
@@ -77,6 +77,6 @@ public class QuizService {
             }
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(right);
+        return right;
     }
 }

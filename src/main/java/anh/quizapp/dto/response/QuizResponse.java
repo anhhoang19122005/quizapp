@@ -6,8 +6,8 @@ import anh.quizapp.entity.Question;
 import java.util.List;
 
 public record QuizResponse(
+        Integer id,
         String quizName,
-        String numQuestions,
-        List<Question> questions
+        Integer numQuestions
 ) {
 }

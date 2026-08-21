@@ -6,12 +6,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
 @Repository
 public interface QuestionRepository extends JpaRepository<Question, Integer> {
-    public List<Question> getQuestionsByCategory(String category);
+    public List<Question> findByCategory(String category);
 
     @Query("SELECT q FROM Question q where q.category =:category ORDER BY RANDOM() limit :numQ")
     public Set<Question> getRandomQuestionsByCategory(@Param("numQ") int numQ,@Param("category") String category);

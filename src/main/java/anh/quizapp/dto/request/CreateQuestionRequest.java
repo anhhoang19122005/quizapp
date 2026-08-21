@@ -1,6 +1,6 @@
 package anh.quizapp.dto.request;
 
-public record CreateQuestionRecord(
+public record CreateQuestionRequest(
         String questionTitle,
         String option1,
         String option2,

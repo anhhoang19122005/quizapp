@@ -1,4 +1,4 @@
-package anh.quizapp.dto.request;
+package anh.quizapp.dto.response;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

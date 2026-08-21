@@ -15,7 +15,7 @@ public class GlobalException {
         apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
         apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
         log.error(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage(), e);
-        return ResponseEntity.badRequest().body(apiResponse);
+        return ResponseEntity.status(ErrorCode.UNCATEGORIZED_EXCEPTION.getStatus()).body(apiResponse);
     }
 
     @ExceptionHandler(value = AppException.class)
@@ -26,7 +26,7 @@ public class GlobalException {
         apiResponse.setCode(error.getCode());
         apiResponse.setMessage(error.getMessage());
 
-        return ResponseEntity.status(error.getCode()).body(apiResponse);
+        return ResponseEntity.status(error.getStatus()).body(apiResponse);
 
     }
 }

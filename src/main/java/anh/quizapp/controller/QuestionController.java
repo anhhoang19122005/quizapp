@@ -1,23 +1,25 @@
 package anh.quizapp.controller;
 
-import anh.quizapp.dto.CreateQuestionRecord;
-import anh.quizapp.dto.QuestionRecord;
+import anh.quizapp.dto.request.CreateQuestionRecord;
+import anh.quizapp.dto.request.QuestionRecord;
 import anh.quizapp.dto.response.ApiResponse;
-import anh.quizapp.entity.Question;
 import anh.quizapp.service.QuestionService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Slf4j
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RestController
 @RequestMapping("/api/questions")
 public class QuestionController {
-    @Autowired
     QuestionService service;
 
     @GetMapping("/allQuestions")
@@ -38,8 +40,8 @@ public class QuestionController {
     }
 
     @PostMapping("add")
-    public ApiResponse<String> addQuestion(@RequestBody CreateQuestionRecord record) {
-        return ApiResponse.<String>builder()
+    public ApiResponse<QuestionRecord> addQuestion(@RequestBody CreateQuestionRecord record) {
+        return ApiResponse.<QuestionRecord>builder()
                 .result(service.addQuestion(record))
                 .build();
 

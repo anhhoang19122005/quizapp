@@ -1,4 +1,4 @@
-package anh.quizapp.dto;
+package anh.quizapp.dto.request;
 
 public record CreateQuestionRecord(
         String questionTitle,

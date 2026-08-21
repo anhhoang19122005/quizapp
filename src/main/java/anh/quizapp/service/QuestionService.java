@@ -1,11 +1,14 @@
 package anh.quizapp.service;
 
+import anh.quizapp.mapper.QuestionMapper;
 import anh.quizapp.repository.QuestionRepository;
-import anh.quizapp.dto.CreateQuestionRecord;
-import anh.quizapp.dto.QuestionRecord;
+import anh.quizapp.dto.request.CreateQuestionRecord;
+import anh.quizapp.dto.request.QuestionRecord;
 import anh.quizapp.entity.Question;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,20 +16,14 @@ import java.util.List;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class QuestionService {
-    @Autowired
     QuestionRepository questionRepository;
+    QuestionMapper questionMapper;
     public List<QuestionRecord> getAllQuestion() {
-        List<QuestionRecord> records = new ArrayList<>();
         try {
-            questionRepository.findAll().forEach(q -> {
-                QuestionRecord questionRecord = new QuestionRecord(q.getId()
-                        , q.getQuestionTitle(),q.getOption1(),q.getOption2()
-                        ,q.getOption3(),q.getOption4(),q.getDifficultyLevel(),q.getCategory()
-                );
-                records.add(questionRecord);
-            });
-            return records;
+            return questionRepository.findAll().stream().map(questionMapper::toQuestionRecord).toList();
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -35,35 +32,13 @@ public class QuestionService {
 
 
     public List<QuestionRecord> getQuestionsByCategory(String category) {
-        List<QuestionRecord> records = new ArrayList<>();
-        questionRepository.findAll().forEach(q -> {
-            QuestionRecord questionRecord = new QuestionRecord(q.getId()
-            , q.getQuestionTitle(),q.getOption1(),q.getOption2()
-            ,q.getOption3(),q.getOption4(),q.getDifficultyLevel(),q.getCategory()
-            );
-            if (q.getCategory().equals(category)) {
-                records.add(questionRecord);
-            }
-        });
-        return records;
+        return questionRepository.findAll().stream().filter(question -> question.getCategory().equals(category))
+                .map(questionMapper::toQuestionRecord).toList();
     }
 
-    public String addQuestion(CreateQuestionRecord record) {
-        Question question = Question.builder()
-                .questionTitle(record.questionTitle())
-                .option1(record.option1())
-                .option2(record.option2())
-                .option3(record.option3())
-                .option4(record.option4())
-                .difficultyLevel(record.difficultyLevel())
-                .category(record.category())
-                .build();
-        try {
-            questionRepository.save(question);
-            return "success";
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        return "failed";
+    public QuestionRecord addQuestion(CreateQuestionRecord record) {
+        Question question = questionMapper.toQuestion(record);
+        questionRepository.save(question);
+        return questionMapper.toQuestionRecord(question);
     }
 }

@@ -1,13 +1,21 @@
 package anh.quizapp.service;
 
+import anh.quizapp.dto.request.CreateQuizRecord;
+import anh.quizapp.dto.response.ApiResponse;
+import anh.quizapp.dto.response.QuizResponse;
+import anh.quizapp.mapper.QuestionMapper;
+import anh.quizapp.mapper.QuizMapper;
 import anh.quizapp.repository.QuestionRepository;
 import anh.quizapp.repository.QuizRepository;
 import anh.quizapp.entity.Question;
 import anh.quizapp.entity.Quiz;
-import anh.quizapp.dto.ResponseRecord;
-import anh.quizapp.dto.QuestionRecord;
+import anh.quizapp.dto.request.ResponseRecord;
+import anh.quizapp.dto.request.QuestionRecord;
 import anh.quizapp.exception.AppException;
 import anh.quizapp.exception.ErrorCode;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,52 +23,38 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class QuizService {
-    @Autowired
+    QuizMapper quizMapper;
+    QuestionMapper questionMapper;
     QuestionRepository questionRepository;
-
-    @Autowired
     QuizRepository quizRepository;
 
-    public String createQuiz(String category, int numQ, String quizName) {
-        Set<Question> questionList = questionRepository.getRandomQuestionsByCategory(numQ,category);
-        Quiz quiz = Quiz.builder()
-                .quizName(quizName)
-                .numQuestions(numQ)
-                .questionList(questionList)
-                .build();
-
-        for (Question q : questionList) {
-            System.out.println(q);
-        }
-        try {
+    public QuizResponse createQuiz(CreateQuizRecord createQuizRecord) {
+        Set<Question> questionList = questionRepository.getRandomQuestionsByCategory(createQuizRecord.numQuestions(),createQuizRecord.category());
+        Quiz quiz = quizMapper.toQuiz(createQuizRecord);
+        quiz.setQuestionList(questionList);
+//        for (Question q : questionList) {
+//            System.out.println(q);
+//        }
             quizRepository.save(quiz);
-            return "success";
-        } catch (Exception e) {
-            log.error(e.getMessage());
-        }
-        return "failed";
+            return quizMapper.toQuizResponse(quiz);
     }
 
     public Set<QuestionRecord> getQuizQuestions(Integer id) {
-            Quiz quiz = quizRepository.findById(id).orElseThrow(() ->
+        Quiz quiz = quizRepository.findById(id).orElseThrow(() ->
                 new AppException(ErrorCode.NOT_FOUND_ID)
-            );
+        );
 
 
-            Set<Question> questionRecordList = quiz.getQuestionList();
-            Set<QuestionRecord> questionRecords = new HashSet<>();
+        Set<Question> questionRecordList = quiz.getQuestionList();
+        return questionRecordList.stream().map(questionMapper::toQuestionRecord).collect(Collectors.toSet());
 
-            questionRecordList.forEach(q -> {
-                QuestionRecord questionRecord = new QuestionRecord(q.getId(),q.getQuestionTitle(),q.getOption1(),
-                q.getOption2(), q.getOption3(),q.getOption4(),q.getDifficultyLevel(),q.getCategory());
-                questionRecords.add(questionRecord);
-            });
-
-            return questionRecords;
     }
 
     public Integer calcQuizResult(Integer id, List<ResponseRecord> responses) {
@@ -71,14 +65,12 @@ public class QuizService {
             for (Question question : questions) {
                 if (response.getId().equals(question.getId()) && response.getResponse().equals(question.getRightAnswer())) {
                     log.info("RIGHT_ANSWER + 1");
-
                     right++;
                 } else {
                     log.info("IGNORED {},{}, {}, {}", response.getId(), response.getResponse(), question.getId(), question.getRightAnswer());
                 }
             }
         }
-
         return right;
     }
 }

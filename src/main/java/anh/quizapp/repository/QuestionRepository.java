@@ -1,4 +1,4 @@
-package anh.quizapp.dao;
+package anh.quizapp.repository;
 
 import anh.quizapp.entity.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 @Repository
-public interface QuestionDAO extends JpaRepository<Question, Integer> {
+public interface QuestionRepository extends JpaRepository<Question, Integer> {
     public List<Question> getQuestionsByCategory(String category);
 
     @Query("SELECT q FROM Question q where q.category =:category ORDER BY RANDOM() limit :numQ")

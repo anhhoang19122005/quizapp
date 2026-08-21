@@ -1,7 +1,7 @@
 package anh.quizapp.service;
 
-import anh.quizapp.dao.QuestionDAO;
-import anh.quizapp.dao.QuizDAO;
+import anh.quizapp.repository.QuestionRepository;
+import anh.quizapp.repository.QuizRepository;
 import anh.quizapp.entity.Question;
 import anh.quizapp.entity.Quiz;
 import anh.quizapp.dto.ResponseRecord;
@@ -10,8 +10,6 @@ import anh.quizapp.exception.AppException;
 import anh.quizapp.exception.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -22,13 +20,13 @@ import java.util.Set;
 @Service
 public class QuizService {
     @Autowired
-    QuestionDAO questionDAO;
+    QuestionRepository questionRepository;
 
     @Autowired
-    QuizDAO quizDAO;
+    QuizRepository quizRepository;
 
     public String createQuiz(String category, int numQ, String quizName) {
-        Set<Question> questionList = questionDAO.getRandomQuestionsByCategory(numQ,category);
+        Set<Question> questionList = questionRepository.getRandomQuestionsByCategory(numQ,category);
         Quiz quiz = Quiz.builder()
                 .quizName(quizName)
                 .numQuestions(numQ)
@@ -39,7 +37,7 @@ public class QuizService {
             System.out.println(q);
         }
         try {
-            quizDAO.save(quiz);
+            quizRepository.save(quiz);
             return "success";
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -48,7 +46,7 @@ public class QuizService {
     }
 
     public Set<QuestionRecord> getQuizQuestions(Integer id) {
-            Quiz quiz = quizDAO.findById(id).orElseThrow(() ->
+            Quiz quiz = quizRepository.findById(id).orElseThrow(() ->
                 new AppException(ErrorCode.NOT_FOUND_ID)
             );
 
@@ -66,7 +64,7 @@ public class QuizService {
     }
 
     public Integer calcQuizResult(Integer id, List<ResponseRecord> responses) {
-        Quiz quiz = quizDAO.findById(id).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND_ID));
+        Quiz quiz = quizRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND_ID));
         Set<Question> questions = quiz.getQuestionList();
         int right = 0;
         for (ResponseRecord response : responses) {
